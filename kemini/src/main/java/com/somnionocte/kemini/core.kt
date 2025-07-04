@@ -14,9 +14,10 @@ import java.security.SecureRandom
 import javax.net.ssl.KeyManager
 import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLSocket
+import javax.net.ssl.TrustManager
 import kotlin.streams.asSequence
 
-data class GeminiOptsBuilder(
+class GeminiOptsBuilder(
     var timeout: Int = 10000,
     var redirectionsAttempts: Int = 5,
     var keyManagers: Array<KeyManager>? = null,
@@ -25,10 +26,9 @@ data class GeminiOptsBuilder(
         emit(GeminiResponse.Unknown(it.stackTraceToString()))
         it.printStackTrace()
     },
+    var trustManager: TrustManager = insecureTrustManager
 ) {
-    companion object {
-        val default = GeminiOptsBuilder()
-    }
+    companion object { val default = GeminiOptsBuilder() }
 }
 
 fun fetchGemini(
@@ -44,11 +44,10 @@ private fun initSocket(
     val port = if (uri.port == -1) 1965 else uri.port
 
     val sslContext = SSLContext.getInstance("TLS")
-    sslContext.init(opts.keyManagers, arrayOf(insecureTrustManager), SecureRandom())
+    sslContext.init(opts.keyManagers, arrayOf(opts.trustManager), SecureRandom())
 
     val socket = sslContext.socketFactory.createSocket() as SSLSocket
 
-    socket.useClientMode = true
     socket.soTimeout = opts.timeout
     socket.connect(InetSocketAddress(uri.host, port), opts.timeout)
 
@@ -82,9 +81,8 @@ private suspend fun FlowCollector<GeminiResponse>.fetchAttempt(
 
                     emit(GeminiResponse.Success(statusCode, meta, stateFlow))
 
-                    reader.lines().asSequence().asFlow().collect { line ->
-                        stateFlow.update { it + line }
-                    }
+                    reader.lines().asSequence().asFlow().flowOn(Dispatchers.IO)
+                        .collect { line -> stateFlow.update { it + line } }
                 }
             )
         }

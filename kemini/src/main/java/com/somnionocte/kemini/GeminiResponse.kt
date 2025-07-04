@@ -32,7 +32,7 @@ sealed class GeminiResponse(
     ) : GeminiResponse(-1, message)
 
     companion object {
-        inline fun by(
+        internal inline fun by(
             statusCode: Int,
             meta: String,
             onRedirect: (URI) -> Unit,
