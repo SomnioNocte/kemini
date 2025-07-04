@@ -2,7 +2,9 @@ package com.somnionocte.kemini
 
 import java.net.URI
 
-private fun chunkLinesByCodeSegments(lines: List<String>): List<List<String>> {
+private fun chunkLinesByCodeSegments(
+    lines: List<String>
+): List<List<String>> {
     var isCurrentChunkCodeSegment = lines.firstOrNull()?.startsWith("```") == true
     val chunks = mutableListOf(mutableListOf<String>())
 
@@ -71,6 +73,7 @@ data class GemNodeLink(val link: String, val altText: String) : GemNode() {
         endsWith(".png") || endsWith(".jpeg") || endsWith(".jpg")
     }
 }
+
 data class GemNodeHeader(val level: Int, val text: String) : GemNode()
 data class GemNodeText(val text: String) : GemNode()
 data class GemNodeListItem(val text: String) : GemNode()

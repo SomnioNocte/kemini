@@ -11,16 +11,18 @@ A simple example:
 ```kotlin
 fetchGemini(
     uri = URI("gemini://geminiprotocol.net/"),
-    opts = GeminiOptsBuilder.default
+    opts = GeminiOptsBuilder(
+        timeout = 10000
+    )
 )
 ```
 
 Success result returns:
 
-```
-GeminiResponse.Success(
+```kotlin
+class Success(
     statusCode: Int,
-    meta: String
+    meta: String,
     mimeType: String,
     body: StateFlow<List<String>>
 )
@@ -29,6 +31,20 @@ GeminiResponse.Success(
 GeminiOptsBuilder also has a couple of other handy properties such as timeout, mapURI which allows you to edit/correct the passed URI.
 
 fetchGemini emits GeminiResponse, which is a sealed class and has the following labels: Success, Error, Input, ClientCertificateRequired and Unknown. Basically, if you are familiar with the Gemini specification, everything will be clear. It is important to clarify that Success result passes content as StateFlow<List<String>>> which is a hot flow and stores all content.
+
+### Gemtext parser
+
+For parsing gemtext into simple and straightforward classes, you can use this function: `fun parseGemtext(lines: List<String>)`
+
+Available nodes: 
+```kotlin
+data class GemNodeLink(val link: String, val altText: String, val isExternalLink: Boolean, val isImage: Boolean) : GemNode()
+data class GemNodeHeader(val level: Int, val text: String) : GemNode()
+data class GemNodeText(val text: String) : GemNode()
+data class GemNodeListItem(val text: String) : GemNode()
+data class GemNodeQuote(val text: String) : GemNode()
+data class GemNodeCode(val lines: List<String>) : GemNode()
+```
 
 ### Install
 
@@ -48,7 +64,7 @@ Add the dependency:
 
 ```kotlin
 dependencies {
-    implementation("com.github.SomnioNocte:kemini:0.1.0")
+    implementation("com.github.SomnioNocte:kemini:0.1.1")
 }
 ```
 
