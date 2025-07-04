@@ -15,6 +15,17 @@ fetchGemini(
 )
 ```
 
+Success result returns:
+
+```
+GeminiResponse.Success(
+    statusCode: Int,
+    meta: String
+    mimeType: String,
+    body: StateFlow<List<String>>
+)
+```
+
 GeminiOptsBuilder also has a couple of other handy properties such as timeout, mapURI which allows you to edit/correct the passed URI.
 
 fetchGemini emits GeminiResponse, which is a sealed class and has the following labels: Success, Error, Input, ClientCertificateRequired and Unknown. Basically, if you are familiar with the Gemini specification, everything will be clear. It is important to clarify that Success result passes content as StateFlow<List<String>>> which is a hot flow and stores all content.
