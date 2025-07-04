@@ -62,7 +62,7 @@ private fun initSocket(
 private suspend fun FlowCollector<GeminiResponse>.fetchAttempt(
     opts: GeminiOptsBuilder,
     uri: URI,
-    attempt: Int = 0
+    attempt: Int = 1
 ) {
     runCatching {
         val socket = initSocket(opts, uri)
@@ -73,7 +73,7 @@ private suspend fun FlowCollector<GeminiResponse>.fetchAttempt(
             GeminiResponse.by(
                 statusCode, meta,
                 onRedirect = {
-                    if(attempt < 4) fetchAttempt(opts, it, attempt + 1)
+                    if(attempt < opts.redirectionsAttempts) fetchAttempt(opts, it, attempt + 1)
                     else emit(GeminiResponse.Unknown("Too much redirects!"))
                 },
                 onSuccess = {

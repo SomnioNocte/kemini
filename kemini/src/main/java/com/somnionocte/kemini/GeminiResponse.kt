@@ -1,6 +1,6 @@
 package com.somnionocte.kemini
 
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import java.net.URI
 
 sealed class GeminiResponse(
@@ -10,7 +10,7 @@ sealed class GeminiResponse(
     class Success(
         statusCode: Int,
         val mimeType: String,
-        val body: Flow<List<String>>,
+        val body: StateFlow<List<String>>,
     ) : GeminiResponse(statusCode, mimeType)
 
     class Error(
