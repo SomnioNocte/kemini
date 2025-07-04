@@ -54,8 +54,8 @@ dependencies {
 
 ### TODO
 
-1. [ ] TOFU
-2. [ ] Utilities for client certificates
-3. [ ] Polishing
-4. [ ] Fetching byte array if mime type isn't text
-5. [ ] Jetpack Compose components for gemtext
+* TOFU
+* Utilities for client certificates
+* Polishing
+* Fetching byte array if mime type isn't text
+* Jetpack Compose components for gemtext
