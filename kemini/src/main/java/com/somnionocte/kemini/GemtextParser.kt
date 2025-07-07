@@ -10,14 +10,7 @@ private fun chunkLinesByCodeSegments(
 
     lines.forEach { line ->
         if(line.startsWith("```")) {
-            if(isCurrentChunkCodeSegment)
-                chunks.last().add(line)
-
             chunks.add(mutableListOf())
-
-            if(!isCurrentChunkCodeSegment)
-                chunks.last().add(line)
-
             isCurrentChunkCodeSegment = !isCurrentChunkCodeSegment
         } else {
             chunks.last().add(line)
