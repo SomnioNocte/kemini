@@ -44,7 +44,7 @@ sealed class GemNode() {
                 val uri = rawLine.substringBefore(" ")
                 val altText = rawLine.substring(uri.length).trimStart()
 
-                GemNodeLink(uri, altText)
+                GemNodeLink(uri, if(altText.isBlank()) uri else altText)
             }
             else if(line.startsWith("#")) {
                 val level = line.run { if(startsWith("###")) 3 else if(startsWith("##")) 2 else 1 }
