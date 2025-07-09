@@ -64,7 +64,7 @@ Add the dependency:
 
 ```kotlin
 dependencies {
-    implementation("com.github.SomnioNocte:kemini:0.1.2")
+    implementation("com.github.SomnioNocte:kemini:0.1.3")
 }
 ```
 

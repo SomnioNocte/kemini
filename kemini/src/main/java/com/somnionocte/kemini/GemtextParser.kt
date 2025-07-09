@@ -72,7 +72,7 @@ data class GemNodeLink(val link: String, val altText: String) : GemNode() {
     }
 
     val isImage = link.toString().run {
-        endsWith(".png") || endsWith(".jpeg") || endsWith(".jpg")
+        endsWith(".png") || endsWith(".jpeg") || endsWith(".jpg") || endsWith(".webp") || endsWith(".gif")
     }
 }
 
