@@ -24,7 +24,7 @@ class GeminiOptsBuilder(
     var keyManagers: Array<KeyManager>? = null,
     var mapURI: (URI) -> URI = { uri -> if(uri.scheme == null) URI("gemini://$uri") else uri },
     var onFailure: suspend FlowCollector<GeminiResponse>.(error: Throwable) -> Unit = {
-        emit(GeminiResponse.Unknown(it.stackTraceToString()))
+        emit(GeminiResponse.Unknown(-1, it.stackTraceToString()))
         it.printStackTrace()
     },
     var trustManager: TrustManager = insecureTrustManager
@@ -74,7 +74,7 @@ private suspend fun FlowCollector<GeminiResponse>.fetchAttempt(
                 statusCode, meta,
                 onRedirect = {
                     if(attempt < opts.redirectionsAttempts) fetchAttempt(opts, it, attempt + 1)
-                    else emit(GeminiResponse.Unknown("Too much redirects!"))
+                    else emit(GeminiResponse.Unknown(-1, "Too much redirects!"))
                 },
                 onSuccess = {
                     val stateFlow = MutableStateFlow(emptyList<String>())
@@ -84,7 +84,7 @@ private suspend fun FlowCollector<GeminiResponse>.fetchAttempt(
                     reader.lines().asSequence().asFlow().flowOn(Dispatchers.IO)
                         .collect { line -> stateFlow.update { it + line } }
                 }
-            )
+            )?.let { emit(it) }
         }
     }.onFailure {
         opts.onFailure(this, it)

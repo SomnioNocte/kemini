@@ -7,6 +7,8 @@ sealed class GeminiResponse(
     val statusCode: Int,
     val meta: String
 ) {
+    override fun toString(): String = "statusCode: $statusCode, meta: $meta"
+
     class Success(
         statusCode: Int,
         val mimeType: String,
@@ -28,8 +30,8 @@ sealed class GeminiResponse(
     ) : GeminiResponse(statusCode, meta)
 
     class Unknown(
-        message: String
-    ) : GeminiResponse(-1, message)
+        statusCode: Int, message: String
+    ) : GeminiResponse(statusCode, message)
 
     companion object {
         internal inline fun by(
@@ -37,13 +39,21 @@ sealed class GeminiResponse(
             meta: String,
             onRedirect: (URI) -> Unit,
             onSuccess: () -> Unit,
-        ) = when(statusCode) {
-            in 10..19 -> Input(statusCode, meta)
-            in 20..29 -> onSuccess()
-            in 30..39 -> onRedirect(URI(meta))
-            in 40..59 -> Error(statusCode, meta)
-            in 60..69 -> ClientCertificateRequired(statusCode, meta)
-            else -> Unknown(meta)
+        ): GeminiResponse? {
+            return when(statusCode) {
+                in 10..19 -> Input(statusCode, meta)
+                in 20..29 -> {
+                    onSuccess()
+                    null
+                }
+                in 30..39 -> {
+                    onRedirect(URI(meta))
+                    null
+                }
+                in 40..59 -> Error(statusCode, meta)
+                in 60..69 -> ClientCertificateRequired(statusCode, meta)
+                else -> Unknown(statusCode, meta)
+            }
         }
     }
 }
