@@ -5,12 +5,15 @@ import java.net.URI
 private fun chunkLinesByCodeSegments(
     lines: List<String>
 ): List<List<String>> {
-    var isCurrentChunkCodeSegment = lines.firstOrNull()?.startsWith("```") == true
-    val chunks = mutableListOf(mutableListOf<String>())
+    var isCurrentChunkCodeSegment = false
+    val chunks = mutableListOf<MutableList<String>>().apply {
+        if(lines.firstOrNull()?.startsWith("```") == false) add(mutableListOf())
+    }
 
     lines.forEach { line ->
         if(line.startsWith("```")) {
             chunks.add(mutableListOf())
+            if(isCurrentChunkCodeSegment) chunks.last().add(line)
             isCurrentChunkCodeSegment = !isCurrentChunkCodeSegment
         } else {
             chunks.last().add(line)
@@ -27,7 +30,7 @@ fun parseGemtext(
 
     return chunks.flatMap { chunk ->
         if(chunk.firstOrNull()?.startsWith("```") == true)
-            listOf(GemNodeCode(chunk))
+            listOf(GemNodeCode(chunk.run { subList(1, lastIndex) }))
         else
             chunk.map { line -> GemNode.from(line) }
     }
