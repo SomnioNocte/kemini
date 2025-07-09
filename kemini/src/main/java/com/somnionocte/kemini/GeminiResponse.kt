@@ -10,8 +10,7 @@ sealed class GeminiResponse(
     override fun toString(): String = "statusCode: $statusCode, meta: $meta"
 
     class Success(
-        statusCode: Int,
-        val mimeType: String,
+        statusCode: Int, val mimeType: String,
         val body: StateFlow<List<String>>,
     ) : GeminiResponse(statusCode, mimeType)
 

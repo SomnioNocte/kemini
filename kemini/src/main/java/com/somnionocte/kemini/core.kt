@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
 import java.net.InetSocketAddress
 import java.net.URI
 import java.nio.charset.StandardCharsets
@@ -71,12 +70,9 @@ private suspend fun FlowCollector<GeminiResponse>.fetchAttempt(
         socket.inputStream.bufferedReader().use { reader ->
             val (statusCode, meta) = getHeader(reader.readLine())
 
-            println("$statusCode $meta")
-
             GeminiResponse.by(
                 statusCode, meta,
                 onRedirect = {
-                    println("Redirect to: $it")
                     if(attempt < opts.redirectionsAttempts) fetchAttempt(opts, it, attempt + 1)
                     else emit(GeminiResponse.Unknown(-1, "Too much redirects!"))
                 },
