@@ -26,8 +26,8 @@ sealed class GeminiResponse(
     ) : GeminiResponse(statusCode, prompt)
 
     class ClientCertificateRequired(
-        statusCode: Int, meta: String
-    ) : GeminiResponse(statusCode, meta)
+        statusCode: Int, val message: String
+    ) : GeminiResponse(statusCode, message)
 
     class Unknown(
         statusCode: Int, message: String

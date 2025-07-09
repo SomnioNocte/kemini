@@ -19,7 +19,7 @@ import javax.net.ssl.TrustManager
 import kotlin.streams.asSequence
 
 class GeminiOptsBuilder(
-    var timeout: Int = 10000,
+    var timeout: Int = 5000,
     var redirectionsAttempts: Int = 5,
     var keyManagers: Array<KeyManager>? = null,
     var mapURI: (URI) -> URI = { uri -> if(uri.scheme == null) URI("gemini://$uri") else uri },
@@ -49,6 +49,7 @@ private fun initSocket(
 
     val socket = sslContext.socketFactory.createSocket() as SSLSocket
 
+    socket.soTimeout = opts.timeout
     socket.connect(InetSocketAddress(uri.host, port), opts.timeout)
 
     socket.outputStream.buffered().let { outputStream ->
@@ -69,6 +70,8 @@ private suspend fun FlowCollector<GeminiResponse>.fetchAttempt(
 
         socket.inputStream.bufferedReader().use { reader ->
             val (statusCode, meta) = getHeader(reader.readLine())
+
+            println("$statusCode $meta")
 
             GeminiResponse.by(
                 statusCode, meta,
