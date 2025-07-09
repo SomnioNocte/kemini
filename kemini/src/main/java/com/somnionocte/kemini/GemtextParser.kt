@@ -41,10 +41,16 @@ sealed class GemNode() {
             else if(line.startsWith("=>")) {
                 val rawLine = line.substring(2).trimStart()
 
-                val uri = rawLine.substringBefore(" ")
-                val altText = rawLine.substring(uri.length).trimStart()
+                val splitter = rawLine.indexOfFirst { it.isWhitespace() }
 
-                GemNodeLink(uri, if(altText.isBlank()) uri else altText)
+                if(splitter != -1) {
+                    val uri = rawLine.substring(0, splitter)
+                    val altText = rawLine.substring(uri.length).trimStart()
+
+                    GemNodeLink(uri, if(altText.isBlank()) uri else altText)
+                } else {
+                    GemNodeLink(rawLine, rawLine)
+                }
             }
             else if(line.startsWith("#")) {
                 val level = line.run { if(startsWith("###")) 3 else if(startsWith("##")) 2 else 1 }
